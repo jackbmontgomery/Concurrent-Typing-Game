@@ -3,7 +3,7 @@ A fun concurrent typing game.
 
 Implementation is as follows:
 Navagte to the root directory in the terminal. 
-The following commands will start the game:
+The following commands will start the game: \n
 make
 cd bin
 java WordApp <number of total words> <number of words on screen> <dictionary file name in the dictionary directory>
