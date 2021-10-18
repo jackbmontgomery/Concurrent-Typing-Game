@@ -1,0 +1,94 @@
+import javax.swing.Timer;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+
+
+public class WordThread extends Thread {
+
+     public WordRecord word;
+     private Timer timer = new Timer(200, new ActionListener() {
+
+         // action listener for the timer object
+         public void actionPerformed(ActionEvent e) {
+
+             // checck if there are too many threads in  execution
+             if (word.getWord().equals("")){
+               endThread();
+            }
+            
+             else if (WordApp.ended==true){
+               endThread();
+               word.setWord("");
+            }
+
+             else{
+                 word.drop((int)word.getSpeed()/100);
+
+                 // word is in the red
+                 if (word.getY()>=WordApp.yLimit){
+                     
+                     AppAudio.wrong();
+
+                     WordApp.score.missedWord();            // incrementing the missedWord counter
+
+                     if (!word.validTest()){                        
+                         endThread();
+                         word.setWord("");
+                      }
+
+                     else{
+                         word.resetWord();         // generating new word
+                        }
+
+                 WordApp.missed.setText("Missed:" + WordApp.score.getMissed()+ "    ");   // changing the missed words text
+                }
+            }
+        }
+      
+    });
+
+  /**
+   * Constructor
+   * @param word WordRecord object attached to thread
+   */
+  public WordThread(WordRecord word){
+    this.word=word;
+    timer.setInitialDelay(0);
+  }
+  
+  /**
+   * method to match the word with the entered word
+   * @param  testWord word to be checked
+   * @return boolean true if the word has been matched
+   */
+  public boolean match(String testWord){
+    if(word.matchWord(testWord)){
+      updateTotals();
+      return true;
+    }
+    return false;
+  }
+
+  
+  /**
+   * Update the scores
+   */
+  public void updateTotals(){
+
+    WordApp.caught.setText("Caught: " + WordApp.score.getCaught() + "    ");
+    WordApp.scr.setText("Score: " + WordApp.score.getScore()+ "    ");
+
+  /**
+   * executed when thread is started
+   */
+  public void run() {
+    timer.start();
+	}
+
+  /**
+   * ends thread
+   */
+   public void endThread(){
+     timer.stop();
+  }
+}
